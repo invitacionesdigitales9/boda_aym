@@ -161,7 +161,7 @@
         h1 { font-family: 'Playfair Display', serif; font-size: 3.5rem; font-weight: bold; margin: 10px 0; color: #000000; }
         .subtitulo { font-size: 0.8rem; letter-spacing: 4px; color: #000000; font-weight: bold; text-transform: uppercase; margin-bottom: 10px; }
 
-        /* DISEÑO DE FECHA */
+        /* DISEÑO DE FECHA CORREGIDO */
         .fecha-grid-especial {
             display: flex;
             align-items: center;
@@ -169,25 +169,33 @@
             max-width: 500px;
             margin: 0 auto;
             position: relative;
+            flex-wrap: nowrap; /* Asegura que no se rompa la línea */
         }
         .fecha-col {
-            padding: 10px 20px;
+            padding: 10px 15px;
             font-family: 'Playfair Display', serif;
-            font-size: 1.8rem;
+            font-size: clamp(1rem, 4vw, 1.8rem); /* Tamaño fluido */
             color: #000000;
             font-weight: bold;
             text-transform: uppercase;
             border-top: 2px solid #8c7e62;
             border-bottom: 2px solid #8c7e62;
-            min-width: 120px;
+            min-width: 80px;
+            white-space: nowrap;
         }
         .fecha-dia-grande {
             font-family: 'Playfair Display', serif;
-            font-size: 4.5rem;
+            font-size: clamp(3rem, 10vw, 4.5rem); /* Tamaño fluido */
             color: #8c7e62; 
-            padding: 0 25px;
+            padding: 0 15px;
             font-weight: bold;
             line-height: 1;
+        }
+        /* Ajuste específico para que la V no se corte */
+        .letra-v {
+            display: inline-block;
+            margin-right: 2px;
+            padding-left: 2px;
         }
         .fecha-anio {
             font-family: 'Playfair Display', serif;
@@ -394,7 +402,7 @@
             font-weight: bold;
             font-size: 0.6rem;
             padding: 5px 10px;
-            border-radius: 5px;
+            border-radius: 50px;
             cursor: pointer;
             text-transform: uppercase;
             margin-top: 10px;
@@ -650,7 +658,6 @@
             document.getElementById('overlay').classList.add('abierto');
             const contenido = document.getElementById('contenido-invitacion');
             contenido.classList.add('mostrar');
-            toggleMusica();
         }
 
         function toggleMusica() {
@@ -700,22 +707,50 @@
             }
         });
 
-        function procesarConfirmacion(status) {
-            let datosFinales = "";
-            if (status === 'SÍ') {
-                let asistiran = [];
-                for (let i = 1; i <= numPases; i++) {
-                    let val = document.getElementById('nombre' + i).value.trim();
-                    if (val !== "") asistiran.push(val);
-                }
-                if (asistiran.length === 0) { alert("Por favor, ingresa los nombres."); return; }
-                datosFinales = familiaNombre + " (" + numPases + "): " + asistiran.join(", ");
-            } else { datosFinales = familiaNombre + " (Inasistencia)"; }
-            
-            document.getElementById('confirmacion-container').style.display = 'none';
-            document.getElementById('mensaje-respuesta').style.display = 'block';
-            console.log("Datos a enviar:", datosFinales);
+     function procesarConfirmacion(status) {
+    // URL de tu Script (asegúrate de que las comillas estén presentes)
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbyYXENVQ7rbbITRPUpsC6pjhZcN6KHYIWdaxDePzx9BDI4_cM05G4107i27jUSSSliw/exec'; 
+    
+    let asistiran = [];
+    if (status === 'SÍ') {
+        for (let i = 1; i <= numPases; i++) {
+            let input = document.getElementById('nombre' + i);
+            if (input) {
+                let val = input.value.trim();
+                if (val !== "") asistiran.push(val);
+            }
         }
+        if (asistiran.length === 0) { 
+            alert("Por favor, ingresa los nombres."); 
+            return; 
+        }
+    }
+
+    // 1. REACCIÓN INSTANTÁNEA: Ocultamos todo y mostramos el "Gracias" de una vez
+    document.getElementById('confirmacion-container').style.display = 'none';
+    document.getElementById('contenedor-dinamico-pases').innerHTML = ""; 
+    document.getElementById('mensaje-respuesta').style.display = 'block';
+
+    // 2. PREPARAR EL NOMBRE: Combinamos Familia + Cantidad + Invitados
+    const nombreFinal = status === 'SÍ' 
+        ? (familiaNombre.replace(/_/g, " ") + " (" + numPases + "): " + asistiran.join(", ")) 
+        : (familiaNombre.replace(/_/g, " ") + " (Inasistencia)");
+
+    // 3. CONSTRUIR URL PARA TU DOGET (usando los parámetros 'asistencia' y 'nombre')
+    const urlFinal = scriptURL + "?asistencia=" + encodeURIComponent(status) + "&nombre=" + encodeURIComponent(nombreFinal);
+
+    // 4. ENVIAR DATOS EN SEGUNDO PLANO
+    fetch(urlFinal, {
+        method: 'GET',
+        mode: 'no-cors'
+    })
+    .then(() => {
+        console.log("Datos registrados con éxito en Sheets.");
+    })
+    .catch(error => {
+        console.error('Error silencioso al enviar:', error);
+    });
+}
     </script>
 </body>
 </html>
