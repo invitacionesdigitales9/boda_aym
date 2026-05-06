@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boda: Aylin & Mayra</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Questrial&family=Bodoni+Moda:wght@500&family=Great+Vibes&display=swap" rel="stylesheet">
+    <style>
+        html {
+            margin: 0; padding: 0; width: 100%;
+        }
+        
+        body { 
+            margin: 0; padding: 0; width: 100%; overflow-x: hidden; 
+            font-family: 'Questrial', sans-serif; 
+            background-color: #fdfdfd; color: #000000; text-align: center; scroll-behavior: smooth;
+        }
+
+        /* Estilos para ocultar contenido hasta abrir el sobre */
+        #contenido-invitacion {
+            opacity: 0;
+            transition: opacity 1.5s ease-in;
+            display: none;
+        }
+        
+        #contenido-invitacion.mostrar {
+            opacity: 1;
+            display: block;
+        }
+
+        /* Overlay de entrada con efecto de escala */
+        #overlay { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: #f4f1ea; display: flex; justify-content: center; align-items: center; 
+            z-index: 2000; transition: transform 0.8s ease-in-out, opacity 0.8s ease-in-out, visibility 0.8s; 
+        }
+
+        .envelope-wrapper {
+            position: relative;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            justify-content: center;
+            transition: transform 0.6s ease-in-out;
+        }
+
+        /* Contenedor con la imagen de fondo */
+        .main-card-entrance {
+            width: 90%;
+            max-width: 400px;
+            aspect-ratio: 9/16;
+            background: url('segunda_imagen.jpeg') center/cover no-repeat; 
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-radius: 10px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            position: relative;
+            padding: 60px;
+            box-sizing: border-box;
+        }
+
+        /* Estructura para letras en diagonal */
+        .diagonal-initials {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 250px;
+            justify-content: space-between;
+        }
+
+        .initials-entrance {
+            font-family: 'Playfair Display', serif;
+            font-size: 6rem;
+            font-weight: bold;
+            color: #ffffff;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+            line-height: 1;
+        }
+
+        .letra-a { align-self: flex-start; text-align: left; }
+        .letra-ampersand { align-self: center; font-size: 6rem; }
+        .letra-m { align-self: flex-end; text-align: right; }
+
+        .tap-text {
+            margin-top: 40px;
+            font-size: 0.7rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: #ffffff;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 8px 18px;
+            border-radius: 20px;
+            backdrop-filter: blur(2px);
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.5; transform: scale(0.95); }
+            50% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0.5; transform: scale(0.95); }
+        }
+
+        /* Efecto de desaparición de la entrada */
+        #overlay.abierto { 
+            opacity: 0; 
+            visibility: hidden; 
+            pointer-events: none; 
+            transform: scale(1.2);
+        }
+
+        /* Estilo de la Barra de Música */
+        .reproductor-seccion {
+            padding: 40px 20px;
+            background-color: #f9f8f6;
+            margin: 20px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .player-container {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            max-width: 400px;
+            width: 100%;
+            background: white;
+            padding: 15px 25px;
+            border-radius: 50px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        .btn-play-pause {
+            width: 40px; height: 40px;
+            background: #d4c3a3;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        .track-info { text-align: left; flex-grow: 1; }
+        .track-name { font-size: 0.7rem; letter-spacing: 2px; color: #000000; font-weight: bold; text-transform: uppercase; }
+        .track-artist { font-size: 0.6rem; color: #000000; font-weight: bold; letter-spacing: 1px; }
+
+        /* Hero y fotos principales */
+        .hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 40px 20px; }
+        .hero-img {
+            width: 90%; max-width: 500px; height: 60vh;
+            background: url('foto.jpeg') center/cover no-repeat;
+            border-radius: 300px 300px 0 0; margin-bottom: 30px;
+        }
+        h1 { font-family: 'Playfair Display', serif; font-size: 3.5rem; font-weight: bold; margin: 10px 0; color: #000000; }
+        .subtitulo { font-size: 0.8rem; letter-spacing: 4px; color: #000000; font-weight: bold; text-transform: uppercase; margin-bottom: 10px; }
+
+        /* DISEÑO DE FECHA */
+        .fecha-grid-especial {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            max-width: 500px;
+            margin: 0 auto;
+            position: relative;
+        }
+        .fecha-col {
+            padding: 10px 20px;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            color: #000000;
+            font-weight: bold;
+            text-transform: uppercase;
+            border-top: 2px solid #8c7e62;
+            border-bottom: 2px solid #8c7e62;
+            min-width: 120px;
+        }
+        .fecha-dia-grande {
+            font-family: 'Playfair Display', serif;
+            font-size: 4.5rem;
+            color: #8c7e62; 
+            padding: 0 25px;
+            font-weight: bold;
+            line-height: 1;
+        }
+        .fecha-anio {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: #000000;
+            font-weight: bold;
+            margin-top: 10px;
+            display: block;
+        }
+
+        /* Reloj */
+        .bloque-tiempo { margin-top: 40px; margin-bottom: 30px; }
+        .cuenta-regresiva-label { font-size: 1.2rem; letter-spacing: 3px; font-weight: bold; text-transform: uppercase; color: #000000; margin-bottom: 15px; }
+        .reloj-grid { display: flex; justify-content: center; gap: 20px; }
+        .tiempo-unidad { font-family: 'Bodoni Moda', serif; font-size: 2.5rem; font-weight: bold; color: #000000; }
+        .tiempo-label { font-size: 0.6rem; text-transform: uppercase; color: #000000; font-weight: bold; letter-spacing: 1px; }
+
+        /* Estructura secciones */
+        .seccion { padding: 80px 20px; max-width: 600px; margin: 0 auto; }
+        .reveal { opacity: 0; transform: translateY(20px); transition: 1s ease-out; }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+
+        .frase { font-family: 'Playfair Display', serif; font-style: italic; font-size: 1.8rem; color: #000000; font-weight: bold; margin-bottom: 30px; }
+
+        /* Decoración de Historia */
+        .historia-marco {
+            border: 1px solid #d4c3a3;
+            padding: 40px 30px;
+            border-radius: 100px 15px 100px 15px;
+            position: relative;
+            background: #fff;
+        }
+        .historia-marco::before, .historia-marco::after {
+            content: "🌿";
+            position: absolute;
+            font-size: 1.5rem;
+            color: #8c7e62;
+        }
+        .historia-marco::before { top: -15px; left: 50%; transform: translateX(-50%); background: #fdfdfd; padding: 0 10px; }
+        .historia-marco::after { bottom: -15px; left: 50%; transform: translateX(-50%) rotate(180deg); background: #fdfdfd; padding: 0 10px; }
+
+        /* Estilo Aviso Importante */
+        .aviso-puntualidad {
+            background-color: #ffffff;
+            border: 1px dashed #d4c3a3;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 10px;
+        }
+
+        /* Padres */
+        .padres-container { display: flex; justify-content: center; gap: 40px; margin-top: 20px; }
+        .padres-col { flex: 1; }
+        .padres-titulo { font-size: 1rem; letter-spacing: 2px; color: #000000; font-weight: bold; text-transform: uppercase; margin-bottom: 15px; }
+        .nombre-padre { font-size: 1.2rem; color: #000000; font-weight: bold; margin: 5px 0; line-height: 1.4; }
+        
+        /* Vestimenta */
+        .vestimenta-container { 
+            display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; 
+        }
+        .vestimenta-card { flex: 1; min-width: 250px; max-width: 300px; }
+        .img-vestimenta { 
+            width: 100%; height: auto; border-radius: 25px; 
+            box-shadow: 0 8px 15px rgba(0,0,0,0.08); display: block;
+        }
+        .vestimenta-label { margin-top: 15px; font-size: 0.8rem; letter-spacing: 2px; color: #000000; font-weight: bold; }
+
+        .alerta-vestimenta {
+            background-color: #fcf8f2;
+            border: 1px solid #e8dec9;
+            color: #000000;
+            font-weight: bold;
+            padding: 10px 20px;
+            border-radius: 50px;
+            display: inline-block;
+            margin-top: 0;
+            margin-bottom: 25px;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+        }
+
+        /* Itinerario */
+        .itinerario-item {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            margin-bottom: 25px;
+            text-align: left;
+            border-bottom: 1px inset rgba(212, 195, 163, 0.2);
+            padding-bottom: 15px;
+        }
+        .itinerario-hora {
+            font-family: 'Bodoni Moda', serif;
+            font-size: 1.1rem;
+            color: #000000;
+            width: 90px;
+            flex-shrink: 0;
+            font-weight: bold;
+        }
+        .itinerario-icono {
+            font-size: 1.4rem;
+            margin: 0 15px;
+            color: #d4c3a3;
+            width: 30px;
+            text-align: center;
+        }
+        .itinerario-texto {
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #000000;
+            font-weight: bold;
+        }
+
+        .icon-circle { 
+            width: 60px; height: 60px; 
+            background-color: white; 
+            border: 1px solid #d4c3a3; 
+            border-radius: 50%; 
+            display: flex; justify-content: center; align-items: center; 
+            margin: 0 auto 15px;
+            font-size: 1.8rem;
+            color: #8c7e62;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+        }
+
+        .foto-secundaria {
+            width: 90%; max-width: 450px; height: 55vh; 
+            background: url('nosotras.jpeg') center/cover no-repeat; 
+            border-radius: 250px 250px 0 0; margin: 40px auto;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        }
+
+        .confirmacion-box { background: #f9f8f6; padding: 40px 20px; border-radius: 5px; margin-top: 40px; }
+        .input-nombre {
+            width: 80%; padding: 12px; margin: 8px 0; border: none;
+            border-bottom: 1px solid #d4c3a3; background: transparent;
+            outline: none; text-align: center; color: #000000; font-weight: bold;
+        }
+        .btn {
+            display: inline-block; padding: 15px 40px; border-radius: 2px;
+            text-decoration: none; text-transform: uppercase; letter-spacing: 2px;
+            font-size: 0.75rem; transition: 0.3s; margin: 10px; cursor: pointer;
+            font-weight: bold;
+        }
+        .btn-principal { background: #d4c3a3; color: white; border: none; }
+        .btn-outline { border: 1px solid #d4c3a3; color: #000000; background: transparent; }
+
+        .modal {
+            display: none; position: fixed; z-index: 3000; left: 0; top: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.9); justify-content: center; align-items: center;
+        }
+        .modal-content { max-width: 90%; max-height: 80%; border-radius: 10px; }
+        .close-modal {
+            position: absolute; top: 20px; right: 30px; color: white; font-size: 40px; 
+            font-weight: bold; cursor: pointer;
+        }
+
+        /* DISEÑO MEJORADO DATOS BANCARIOS */
+        .banco-card {
+            border: 1px solid transparent;
+            background: linear-gradient(white, white) padding-box,
+                        linear-gradient(135deg, #d4c3a3, #8c7e62) border-box;
+            padding: 30px 20px;
+            border-radius: 20px;
+            margin-top: 20px;
+            display: inline-block;
+            min-width: 300px;
+            box-shadow: 0 10px 30px rgba(212, 195, 163, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        .banco-card::before {
+            content: "💳";
+            position: absolute;
+            top: 5px; 
+            right: 10px; 
+            font-size: 4rem; 
+            opacity: 0.15; 
+            transform: rotate(-15deg);
+            color: #d4c3a3;
+        }
+        .banco-dato { margin: 15px 0; text-align: center; position: relative; z-index: 1; }
+        .banco-label { 
+            font-weight: bold; 
+            color: #000000; 
+            text-transform: uppercase; 
+            font-size: 0.65rem; 
+            letter-spacing: 2px;
+            display: block; 
+            margin-bottom: 5px; 
+        }
+        .banco-valor {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem;
+            color: #000000;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        .btn-copiar {
+            background: #f9f8f6;
+            border: 1px solid #d4c3a3;
+            color: #000000;
+            font-weight: bold;
+            font-size: 0.6rem;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-transform: uppercase;
+            margin-top: 10px;
+            transition: 0.3s;
+        }
+        .btn-copiar:active { background: #d4c3a3; color: white; }
+
+    </style>
+</head>
+<body>
+
+    <!-- Overlay de entrada con letras en diagonal -->
+    <div id="overlay" onclick="abrirInvitacion()">
+        <div class="envelope-wrapper">
+            <div class="main-card-entrance">
+                <div class="diagonal-initials">
+                    <span class="initials-entrance letra-a">A</span>
+                    <span class="initials-entrance letra-ampersand">&</span>
+                    <span class="initials-entrance letra-m">M</span>
+                </div>
+                <div class="tap-text">Toca para abrir</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TODO EL CONTENIDO ENCAPSULADO -->
+    <div id="contenido-invitacion">
+        
+        <div id="modalCroquis" class="modal" onclick="cerrarCroquis()">
+            <span class="close-modal">&times;</span>
+            <img class="modal-content" src="croquis.jpg" alt="Croquis de entrada" onclick="event.stopPropagation()">
+        </div>
+
+        <audio id="musica" loop><source src="musica.mp3" type="audio/mpeg"></audio>
+
+        <section class="hero">
+            <div class="subtitulo">¡El gran día ha llegado!</div>
+            <h1>Aylin & Mayra</h1>
+            <div class="hero-img"></div>
+            
+            <div class="bloque-tiempo">
+                <div class="fecha-grid-especial">
+                    <div class="fecha-col">Viernes</div>
+                    <div class="fecha-dia-grande">26</div>
+                    <div class="fecha-col">Junio</div>
+                </div>
+                <div class="fecha-anio">2026</div>
+
+                <div class="cuenta-regresiva-label" style="margin-top: 40px;">Cuenta Regresiva</div>
+                <div id="reloj" class="reloj-grid">
+                    <div><span class="tiempo-unidad" id="dias">00</span><span class="tiempo-label">Días</span></div>
+                    <div><span class="tiempo-unidad" id="horas">00</span><span class="tiempo-label">Hrs</span></div>
+                    <div><span class="tiempo-unidad" id="mins">00</span><span class="tiempo-label">Min</span></div>
+                    <div><span class="tiempo-unidad" id="segs">00</span><span class="tiempo-label">Seg</span></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="reproductor-seccion reveal">
+            <div class="player-container">
+                <div class="btn-play-pause" onclick="toggleMusica()">
+                    <span id="music-icon">▶</span>
+                </div>
+                <div class="track-info">
+                    <div class="track-name">The Only Exception</div>
+                    <div class="track-artist">Paramore</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="seccion reveal">
+            <div class="historia-marco">
+                <p style="font-size: 0.8rem; letter-spacing: 2px; color: #000000; font-weight: bold; text-transform: uppercase; margin-bottom: 10px;">El amor nos unió, ahora queremos compartirlo contigo</p>
+                <h2 style="font-family: 'Playfair Display', serif; font-size: 2.2rem; color: #000000; margin-bottom: 20px; font-weight: bold;">Nuestra Historia</h2>
+                <p style="font-size: 1.1rem; color: #000000; font-weight: bold; line-height: 1.8; max-width: 500px; margin: 0 auto;">
+                    Después de compartir tantos momentos maravillosos, hemos decidido dar el paso más importante de nuestras vidas. Queremos que seas testigo del inicio de esta nueva y emocionante etapa.
+                </p>
+            </div>
+        </section>
+
+        <section class="seccion reveal">
+            <p class="frase">"Con la bendición de nuestros padres"</p>
+            <div class="padres-container">
+                <div class="padres-col">
+                    <p class="padres-titulo">Padres de Aylin</p>
+                    <p class="nombre-padre">Jaime Cabriales Lopez</p>
+                    <p class="nombre-padre">Imelda Maciel Ortiz</p>
+                </div>
+                <div class="padres-col" style="border-left: 1px solid rgba(0,0,0,0.05);">
+                    <p class="padres-titulo">Padres de Mayra</p>
+                    <p class="nombre-padre">Jesus Maria Colunga Alvarado</p>
+                    <p class="nombre-padre">Luz Maria gaytan De la Cruz</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="reveal">
+            <div class="foto-secundaria"></div>
+        </section>
+
+        <section class="seccion reveal" style="background-color: #f4f1ea;">
+            <div class="aviso-puntualidad">
+                <p style="font-size: 1.1rem; color: #000000; font-weight: bold; margin-bottom: 5px;"><strong>AVISO IMPORTANTE</strong></p>
+                <p style="font-size: 0.95rem; color: #000000; font-weight: bold; line-height: 1.5; margin: 0;">Agradecemos su puntualidad y les pedimos llegar 30 min antes del inicio de nuestra boda.</p>
+            </div>
+
+            <p style="font-size: 1.2rem; letter-spacing: 2px; color: #000000; font-weight: bold; text-transform: uppercase;">Ubicación</p>
+            <p style="margin-top: 10px; font-size: 1.6rem; font-family: 'Playfair Display', serif; color: #000000; font-weight: bold;"><strong>Quinta Si-Mar</strong></p>
+            
+            <div style="display: flex; justify-content: center; gap: 40px; margin-top: 25px; border-top: 1px solid rgba(163, 146, 116, 0.2); padding-top: 25px;">
+                <div style="flex: 1;">
+                    <p style="font-size: 0.7rem; letter-spacing: 2px; color: #000000; font-weight: bold; text-transform: uppercase;">Ceremonia</p>
+                    <p style="font-size: 1.2rem; color: #000000; font-weight: bold;">7:00 PM</p>
+                </div>
+                <div style="flex: 1; border-left: 1px solid rgba(163, 146, 116, 0.3);">
+                    <p style="font-size: 0.7rem; letter-spacing: 2px; color: #000000; font-weight: bold; text-transform: uppercase;">Recepción</p>
+                    <p style="font-size: 1.2rem; color: #000000; font-weight: bold;">8:00 PM</p>
+                </div>
+            </div>
+            <div style="margin-top: 30px;">
+                <a href="https://maps.app.goo.gl/EPKdZRM1tdB5ykMk7" target="_blank" class="btn btn-principal">Ver Ubicación</a>
+                <br>
+                <button onclick="abrirCroquis()" class="btn btn-outline" style="margin-top: 15px;">Ver Croquis de Entrada</button>
+            </div>
+        </section>
+
+        <section class="seccion reveal">
+            <p style="font-size: 1.2rem; letter-spacing: 2px; color: #a39274; font-weight: bold; text-transform: uppercase; margin-bottom: 20px;">CODIGO DE VESTIMENTA</p>
+            
+            <div class="alerta-vestimenta">
+                ✨ Favor de respetar el código de vestimenta
+            </div>
+
+            <div class="vestimenta-container">
+                <div class="vestimenta-card">
+                    <img src="mujeres.jpg" alt="Mujeres" class="img-vestimenta">
+                    <p class="vestimenta-label">MUJERES</p>
+                </div>
+                <div class="vestimenta-card">
+                    <img src="hombres.jpg" alt="Hombres" class="img-vestimenta">
+                    <p class="vestimenta-label">HOMBRES</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="seccion reveal" style="background-color: #f9f8f6; border-top: 1px solid #eee; margin-top: 20px;">
+            <div style="max-width: 400px; margin: 0 auto;">
+                <div class="icon-circle">✉</div>
+                <p style="font-size: 1.2rem; letter-spacing: 2px; color: #000000; font-weight: bold; text-transform: uppercase;">Lluvia de Sobres y Regalos</p>
+                <p style="font-size: 1rem; color: #000000; font-weight: bold; line-height: 1.6;">El mejor regalo es compartir este dia con ustedes. Pero si desean tener un detalle con nosotras, agradeceremos un sobre de regalo o transferencia. Tambien contaremos con una pequeña mesa de regalos para quien lo prefiera.</p>
+            </div>
+        </section>
+
+        <section class="seccion reveal" style="background-color: #fdfdfd; padding-top: 0;">
+            <div style="max-width: 450px; margin: 0 auto;">
+                <p style="font-size: 0.8rem; letter-spacing: 2px; color: #000000; font-weight: bold; text-transform: uppercase; margin-bottom: 10px;">Datos para transferencia</p>
+                <div class="banco-card">
+                    <div class="banco-dato">
+                        <span class="banco-label">Titular de la cuenta</span>
+                        <strong class="banco-valor">Erika Aylin Cabriales Maciel</strong>
+                    </div>
+                    <div class="banco-dato">
+                        <span class="banco-label">Institución Bancaria</span>
+                        <strong class="banco-valor">Banorte</strong>
+                    </div>
+                    <div class="banco-dato">
+                        <span class="banco-label">Número de Tarjeta / CLABE</span>
+                        <strong class="banco-valor" id="num-tarjeta">4189 1432 3287 8689</strong>
+                        <br>
+                        <button class="btn-copiar" onclick="copiarCLABE()">Copiar Datos</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="seccion reveal" style="background-color: #f9f8f6; border-top: 1px solid #eee; margin-top: 20px; padding-bottom: 40px;">
+            <div style="max-width: 400px; margin: 0 auto;">
+                <div class="icon-circle">🥂</div>
+                <p style="font-size: 1.2rem; letter-spacing: 2px; color: #000000; font-weight: bold; text-transform: uppercase;">Solo Adultos</p>
+                <p style="font-size: 1rem; color: #000000; font-weight: bold; line-height: 1.6;">Amamos a sus pequeños, pero para que todos puedan disfrutar al máximo, hemos decidido que nuestra boda sea una celebración exclusiva para adultos.</p>
+            </div>
+        </section>
+
+        <section class="seccion reveal" style="padding-top: 40px; padding-bottom: 40px;">
+            <p style="font-size: 0.8rem; letter-spacing: 2px; color: #000000; font-weight: bold; text-transform: uppercase; margin-bottom: 40px;">Itinerario del Evento</p>
+            
+            <div style="max-width: 350px; margin: 0 auto;">
+                <div class="itinerario-item">
+                    <div class="itinerario-hora">07:00 PM</div>
+                    <div class="itinerario-icono">💍</div>
+                    <div class="itinerario-texto">Ceremonia</div>
+                </div>
+
+                <div class="itinerario-item">
+                    <div class="itinerario-hora">07:30 PM</div>
+                    <div class="itinerario-icono">🥂</div>
+                    <div class="itinerario-texto">Rompehielo</div>
+                </div>
+
+                <div class="itinerario-item">
+                    <div class="itinerario-hora">08:00 PM</div>
+                    <div class="itinerario-icono">✨</div>
+                    <div class="itinerario-texto">Entrada de las novias</div>
+                </div>
+
+                <div class="itinerario-item">
+                    <div class="itinerario-hora">09:00 PM</div>
+                    <div class="itinerario-icono">🍽️</div>
+                    <div class="itinerario-texto">Cena</div>
+                </div>
+
+                <div class="itinerario-item" style="border: none;">
+                    <div class="itinerario-hora">10:00 PM</div>
+                    <div class="itinerario-icono">💃</div>
+                    <div class="itinerario-texto">¡Que empiece la fiesta!</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="seccion reveal" style="padding-top: 20px;">
+            <h2 id="display-familia" style="font-family: 'Playfair Display'; font-weight: bold; color: #000000; margin-top: 0;">Familia</h2>
+            <p id="contador-pases-texto" style="font-size: 1.2rem; color: #000000; font-weight: bold; margin-bottom: 5px;"></p>
+            <p style="font-size: 1rem; color: #000000; font-weight: bold; letter-spacing: 1px; margin-bottom: 20px; text-transform: uppercase;">Favor de confirmar antes del 11 de mayo del 2026</p>
+            
+            <div class="confirmacion-box">
+                <div id="contenedor-dinamico-pases"></div>
+                <div id="confirmacion-container" style="margin-top: 30px;">
+                    <button onclick="procesarConfirmacion('SÍ')" class="btn btn-principal">Confirmar Asistencia</button>
+                    <br>
+                    <button onclick="procesarConfirmacion('NO')" style="background:none; border:none; color:#000000; font-weight: bold; cursor:pointer; font-size: 1rem; margin-top: 15px;">No podré asistir</button>
+                </div>
+                <p id="mensaje-respuesta" style="display:none; color: #d4c3a3; font-weight: bold; margin-top: 20px;">¡Gracias por confirmar!</p>
+            </div>
+            <p style="margin-top: 60px; font-size: 0.8rem; color: #000000; font-weight: bold; letter-spacing: 2px;">CON CARIÑO, <br><strong>AYLIN & MAYRA</strong></p>
+        </section>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const familiaNombre = urlParams.get('n') || "Invitado";
+        const numPases = parseInt(urlParams.get('p')) || 2; 
+
+        document.getElementById('display-familia').innerText = "Familia " + familiaNombre.replace(/_/g, " ");
+        document.getElementById('contador-pases-texto').innerText = "* Pase para " + numPases + " personas *";
+
+        const contenedor = document.getElementById('contenedor-dinamico-pases');
+        for (let i = 1; i <= numPases; i++) {
+            contenedor.innerHTML += `<input type="text" id="nombre${i}" class="input-nombre" placeholder="Nombre del invitado ${i}">`;
+        }
+
+        const audioMusica = document.getElementById('musica');
+        function abrirInvitacion() {
+            document.getElementById('overlay').classList.add('abierto');
+            const contenido = document.getElementById('contenido-invitacion');
+            contenido.classList.add('mostrar');
+            toggleMusica();
+        }
+
+        function toggleMusica() {
+            if (audioMusica.paused) {
+                audioMusica.play().catch(e => console.log("Audio play blocked by browser"));
+                document.getElementById('music-icon').innerText = "||";
+            } else {
+                audioMusica.pause();
+                document.getElementById('music-icon').innerText = "▶";
+            }
+        }
+
+        function abrirCroquis() {
+            document.getElementById('modalCroquis').style.display = 'flex';
+        }
+        function cerrarCroquis() {
+            document.getElementById('modalCroquis').style.display = 'none';
+        }
+
+        function copiarCLABE() {
+            const clabe = document.getElementById('num-tarjeta').innerText;
+            navigator.clipboard.writeText(clabe).then(() => {
+                alert("Número de tarjeta copiado.");
+            });
+        }
+
+        const fechaBoda = new Date(2026, 5, 26, 19, 30, 0).getTime(); 
+        setInterval(function() {
+            const ahora = new Date().getTime();
+            const d = fechaBoda - ahora;
+            if (d > 0) {
+                document.getElementById("dias").innerHTML = Math.floor(d / (1000 * 60 * 60 * 24));
+                document.getElementById("horas").innerHTML = Math.floor((d % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                document.getElementById("mins").innerHTML = Math.floor((d % (1000 * 60 * 60)) / (1000 * 60));
+                document.getElementById("segs").innerHTML = Math.floor((d % (1000 * 60)) / 1000);
+            }
+        }, 1000);
+
+        window.addEventListener("scroll", function() {
+            var reveals = document.querySelectorAll(".reveal");
+            for (var i = 0; i < reveals.length; i++) {
+                var windowHeight = window.innerHeight;
+                var elementTop = reveals[i].getBoundingClientRect().top;
+                if (elementTop < windowHeight - 100) {
+                    reveals[i].classList.add("visible");
+                }
+            }
+        });
+
+        function procesarConfirmacion(status) {
+            let datosFinales = "";
+            if (status === 'SÍ') {
+                let asistiran = [];
+                for (let i = 1; i <= numPases; i++) {
+                    let val = document.getElementById('nombre' + i).value.trim();
+                    if (val !== "") asistiran.push(val);
+                }
+                if (asistiran.length === 0) { alert("Por favor, ingresa los nombres."); return; }
+                datosFinales = familiaNombre + " (" + numPases + "): " + asistiran.join(", ");
+            } else { datosFinales = familiaNombre + " (Inasistencia)"; }
+            
+            document.getElementById('confirmacion-container').style.display = 'none';
+            document.getElementById('mensaje-respuesta').style.display = 'block';
+            console.log("Datos a enviar:", datosFinales);
+        }
+    </script>
+</body>
+</html>
